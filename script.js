@@ -14,9 +14,12 @@ class Applicant {
 } 
 
 function submit_send() {
+
+    event.preventDefault()
+
     let name = document.querySelector('.submit-input-name').value
     let email = document.querySelector('.submit-input-email').value
-    let num = document.querySelector('.submit-input-number').value
+    let phone = document.querySelector('.submit-input-number').value
     let name_company =  document.querySelector('.submit-input-namecomp').value
 
     let check = false
@@ -26,7 +29,7 @@ function submit_send() {
             check = false
         } else if (email == "") {
             check = false
-        } else if (num == "") {
+        } else if (phone == "") {
             check = false
         } else {
             check = true
@@ -36,54 +39,45 @@ function submit_send() {
             let applicant = {
                 name: name,
                 email: email,
-                number: num,
+                phone: phone,
                 name_company: name_company,
             }
             
-            //applicants.push(applicant)
-
-            //send_email()
 
             alert('Заявка отправлена!')
 
-            send_email()
+            send_email(name, email, phone, name_company)
 
             console.log('Name:', name)
             console.log('Email:', email)
-            console.log('Phone number:', num)
+            console.log('Phone number:', phone)
             console.log('Name company:', name_company)
             
         }
     }  
 }
 
-function send_email() {
-    document.getElementById('submitForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-            
-        const formData = new FormData(this);
-        const data = {
-            from: `${formData.get('name')} <${formData.get('email')}>`,
-            to: 'sychevdenis2009@gmail.com', // Email получателя
-            subject: 'Новое сообщение',
-            body_text: `Имя: ${formData.get('name')} Почта: ${formData.get('email')} Телефон: ${formData.get('tel')} Название компании: ${formData.get('name-company')}`
-        };
+function send_email(name, email, phone, name_company) {
+    emailjs.init('YGfm7WIrxh5xbg35-') // PUBLIC KEY, US_ID
 
-        axios({
-            method: 'post',
-            url: `https://api.elasticemail.com/v2/email/send`,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-ElasticEmail-ApiKey': 'EE1AA0E95DC1F2C32B040831FDCA57903636C351AA6CE1A220D17CF7DE88DAFE88E9F2F8F2D0A97BA326957D2C89927D'
-            },
-            params: data
+    const templateParams = {
+        name: name,
+        email: email,
+        phone: phone,
+        name_company: name_company,
+    }
+
+    emailjs.send('service_ifpetao', 'template_c1jve8t', templateParams) // Service_ID, Template_ID, const
+        .then(function(response) {
+            console.log('Success', response)
+        }, function(error) {
+            console.log('Error', error)
         })
-    });
 }
 
-let applicants = []
 
 let submit_btn_send = document.querySelector('.submit-btn')
 submit_btn_send.addEventListener('click', submit_send)
+
 //transport@oooyupk.ru
 
